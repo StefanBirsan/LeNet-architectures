@@ -43,7 +43,7 @@ def compile_train_evaluate_plot(model, X_train, y_train, X_val, y_val, X_test, y
 
     return history, test_accuracy_callback.test_accuracy
 
-def preprocess_image(image_relative_path, base_image_path):
+def preprocess_test_image(image_relative_path, base_image_path):
     normalized_path = os.path.normpath(image_relative_path)
     full_path = os.path.join(base_image_path, normalized_path)
     img = load_img(full_path, target_size=(28, 28))  
@@ -58,7 +58,7 @@ def predict_images(model, annotations_path, base_image_path):
     true_class_ids = annotations['ClassId'].values
     true_class_ids = to_categorical(true_class_ids, num_classes=43)
 
-    preprocessed_images = np.vstack([preprocess_image(path, base_image_path) for path in image_paths])
+    preprocessed_images = np.vstack([preprocess_test_image(path, base_image_path) for path in image_paths])
     
     # Evaluate the model on the preprocessed images
     loss, accuracy = model.evaluate(preprocessed_images, true_class_ids, verbose=0)
