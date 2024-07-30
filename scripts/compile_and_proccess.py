@@ -11,18 +11,20 @@ class TestAccuracyCallback(Callback):
     def __init__(self, test_data):
         self.test_data = test_data
         self.test_accuracy = []
+        self.test_loss = []
 
     def on_epoch_end(self, epoch, logs=None):
         x, y = self.test_data
         loss, accuracy = self.model.evaluate(x, y, verbose=0)
         self.test_accuracy.append(accuracy)
+        self.test_loss.append(loss)
 
 def compile_train_evaluate_plot(model, X_train, y_train, X_val, y_val, X_test, y_test, epochs):
     # Print the shapes of the training and test data
     print(f"X_train shape: {X_train.shape}")
     print(f"y_train shape: {y_train.shape}")
-    print(f"X_test shape: {X_test.shape}")
-    print(f"y_test shape: {y_test.shape}")
+    print(f"X_test shape: {X_val.shape}")
+    print(f"y_test shape: {y_val.shape}")
 
     # Ensure the model's input layer matches the shape of X_train
     if model.input_shape[1:] != X_train.shape[1:]:
@@ -41,7 +43,7 @@ def compile_train_evaluate_plot(model, X_train, y_train, X_val, y_val, X_test, y
     # Plotting the training history
     #plot_training_history(history)
 
-    return history, test_accuracy_callback.test_accuracy
+    return history, test_accuracy_callback.test_accuracy, test_accuracy_callback.test_loss
 
 def preprocess_test_image(image_relative_path, base_image_path):
     normalized_path = os.path.normpath(image_relative_path)

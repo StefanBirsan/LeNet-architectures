@@ -13,7 +13,7 @@ from keras.layers import Conv2D, Dense, Flatten, Rescaling, AveragePooling2D, Dr
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'scripts'))
 
-from plot_utils import plot_accuracy
+from plot_utils import plot_accuracy, plot_loss
 from compile_and_proccess import compile_train_evaluate_plot, preprocess_test_image, predict_images
 from networks.lenet_1 import LeNet
 
@@ -67,9 +67,10 @@ X_test = np.vstack([preprocess_test_image(path, base_path) for path in image_pat
 y_test = true_class_ids
 
 # Compilation of the model
-history, test_accuracy = compile_train_evaluate_plot(model, X_train, y_train, X_val, y_val, X_test, y_test, epochs=50)
+history, test_accuracy, test_loss = compile_train_evaluate_plot(model, X_train, y_train, X_val, y_val, X_test, y_test, epochs=50)
 
 # Evaluate the model on the preprocessed images
 loss, accuracy = predict_images(model, annotations_path, base_path)
 
 plot_accuracy(history, test_accuracy)
+plot_loss(history, test_loss)
