@@ -8,8 +8,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from keras.utils import to_categorical
-from keras.models import Sequential, load_model
-from keras.layers import Conv2D, Dense, Flatten, Rescaling, AveragePooling2D, Dropout, Input, MaxPooling2D
+from sklearn.metrics import roc_curve, roc_auc_score
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'scripts'))
 
@@ -70,9 +69,15 @@ y_test = true_class_ids
 history, test_accuracy, test_loss, confusion_matrix = compile_train_evaluate_plot(model, X_train, y_train, X_val, y_val, X_test, y_test, epochs=50)
 
 # Evaluate the model on the preprocessed images
-loss, accuracy = predict_images(model, annotations_path, base_path)
+loss, accuracy, f1 = predict_images(model, annotations_path, base_path)
 
 plot_accuracy(history, test_accuracy)
 plot_loss(history, test_loss)
 plot_confusion_matrix(confusion_matrix)
 
+# Calculate ROC curve and AUC score
+y_pred = model.predict(X_test)
+fpr, tpr, _ = roc_curve(y_test.ravel(), y_pred.ravel())
+roc_auc = roc_auc_score(y_test, y_pred, multi_class='ovr')
+
+print(f'ROC AUC score: {roc_auc:.2f}')

@@ -6,7 +6,7 @@ import pandas as pd
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
 from keras.utils import to_categorical
 from custom_callbacks import TestAccuracyCallback
-
+from sklearn.metrics import f1_score
             
 def compile_train_evaluate_plot(model, X_train, y_train, X_val, y_val, X_test, y_test, epochs):
     print(f"X_test shape: {X_test.shape}")
@@ -51,7 +51,16 @@ def predict_images(model, annotations_path, base_image_path):
     # Evaluate the model on the preprocessed images
     loss, accuracy = model.evaluate(preprocessed_images, true_class_ids, verbose=0)
     
+    # Make predictions on the test set
+    y_pred = model.predict(preprocessed_images)
+    y_pred_classes = np.argmax(y_pred, axis=1)
+    y_true_classes = np.argmax(true_class_ids, axis=1)
+
+    # Calculate the F1-score
+    f1 = f1_score(y_true_classes, y_pred_classes, average='weighted')
+    
     print(f'Test Accuracy: {accuracy * 100:.2f}%')
     print(f'Test Loss: {loss:.4f}')
+    print(f'F1-score: {f1:.2f}')
 
-    return loss, accuracy
+    return loss, accuracy, f1
