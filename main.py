@@ -67,10 +67,12 @@ X_test = np.vstack([preprocess_test_image(path, base_path) for path in image_pat
 y_test = true_class_ids
 
 # Compilation of the model
-history, test_accuracy, test_loss = compile_train_evaluate_plot(model, X_train, y_train, X_val, y_val, X_test, y_test, epochs=50)
+history, test_accuracy, test_loss, confusion_matrix = compile_train_evaluate_plot(model, X_train, y_train, X_val, y_val, X_test, y_test, epochs=50)
 
 # Evaluate the model on the preprocessed images
 loss, accuracy = predict_images(model, annotations_path, base_path)
 
 plot_accuracy(history, test_accuracy)
 plot_loss(history, test_loss)
+plot_confusion_matrix(confusion_matrix)
+

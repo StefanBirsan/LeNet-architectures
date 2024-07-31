@@ -48,7 +48,8 @@ def plot_loss(history, test_loss):
 
 def plot_confusion_matrix(confusion_matrix):
     plt.figure(figsize=(10, 7))
+    ax = plt.gca()  
     disp = ConfusionMatrixDisplay(confusion_matrix=confusion_matrix)
-    disp.plot(cmap=plt.cm.Blues)
+    disp.plot(cmap=plt.cm.Blues, ax=ax) 
     plt.title('Confusion Matrix')
     plt.show()
