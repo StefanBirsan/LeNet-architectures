@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from keras.callbacks import Callback
+from sklearn.metrics import ConfusionMatrixDisplay
 
 
 def plot_training_history(history):
@@ -43,4 +44,11 @@ def plot_loss(history, test_loss):
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(['Validation', 'Test'], loc='upper left')
+    plt.show()
+
+def plot_confusion_matrix(confusion_matrix):
+    plt.figure(figsize=(10, 7))
+    disp = ConfusionMatrixDisplay(confusion_matrix=confusion_matrix)
+    disp.plot(cmap=plt.cm.Blues)
+    plt.title('Confusion Matrix')
     plt.show()

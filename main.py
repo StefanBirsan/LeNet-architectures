@@ -13,7 +13,7 @@ from keras.layers import Conv2D, Dense, Flatten, Rescaling, AveragePooling2D, Dr
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'scripts'))
 
-from plot_utils import plot_accuracy, plot_loss
+from plot_utils import plot_accuracy, plot_loss, plot_confusion_matrix
 from compile_and_proccess import compile_train_evaluate_plot, preprocess_test_image, predict_images
 from networks.lenet_1 import LeNet
 

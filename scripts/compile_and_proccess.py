@@ -6,19 +6,29 @@ import pandas as pd
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
 from keras.utils import to_categorical
 from keras.callbacks import Callback
+from sklearn.metrics import confusion_matrix
 
 class TestAccuracyCallback(Callback):
     def __init__(self, test_data):
+        """
+        Initialize the callback with test data.
+        
+        Parameters:
+        test_data (tuple): A tuple containing the test features and labels.
+        """
         self.test_data = test_data
         self.test_accuracy = []
         self.test_loss = []
 
     def on_epoch_end(self, epoch, logs=None):
         x, y = self.test_data
+        # Evaluate the model on the test data
         loss, accuracy = self.model.evaluate(x, y, verbose=0)
         self.test_accuracy.append(accuracy)
         self.test_loss.append(loss)
+        
 
+            
 def compile_train_evaluate_plot(model, X_train, y_train, X_val, y_val, X_test, y_test, epochs):
     # Print the shapes of the training and test data
     print(f"X_train shape: {X_train.shape}")
