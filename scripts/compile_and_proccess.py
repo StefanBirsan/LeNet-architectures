@@ -3,12 +3,14 @@ from plot_utils import plot_training_history
 import os
 import numpy as np
 import pandas as pd
+import tensorflow as tf
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
 from keras.utils import to_categorical
 from custom_callbacks import TestAccuracyCallback
 from sklearn.metrics import f1_score
+from io import StringIO
             
-def compile_train_evaluate_plot(model, X_train, y_train, X_val, y_val, X_test, y_test, epochs):
+def compile_train_evaluate_plot(model, X_train, y_train, X_val, y_val, X_test, y_test, epochs, batch_size):
     print(f"X_test shape: {X_test.shape}")
     print(f"y_test shape: {y_test.shape}")
 
@@ -16,20 +18,29 @@ def compile_train_evaluate_plot(model, X_train, y_train, X_val, y_val, X_test, y
     if model.input_shape[1:] != X_train.shape[1:]:
         raise ValueError(f"Model input shape {model.input_shape[1:]} does not match X_train shape {X_train.shape[1:]}")
 
+    opt = tf.keras.optimizers.Adam(learning_rate=0.00001)
+
     # Compilation of the model
-    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer=opt, loss='mean_squared_error', metrics=['accuracy'])
+
+    summary_io = StringIO()
+    model.summary(print_fn=lambda x: summary_io.write(x + "\n"))
     
-    model.summary()
+    # Ensure the directory exists
+    os.makedirs("test_summaries", exist_ok=True)
+    
+    with open("test_summaries/model_ReLu_batch256_ep50_lr0.00001_summary.txt", "w", encoding="utf-8") as f:
+        f.write(summary_io.getvalue())
 
     test_accuracy_callback = TestAccuracyCallback((X_test, y_test))
 
     # Training the model
-    history = model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=epochs, callbacks=[test_accuracy_callback])
+    history = model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=epochs, callbacks=[test_accuracy_callback], batch_size=batch_size)
 
     # Plotting the training history
     #plot_training_history(history)
 
-    return history, test_accuracy_callback.test_accuracy, test_accuracy_callback.test_loss, test_accuracy_callback.confusion_matrix
+    return history, test_accuracy_callback.test_accuracy, test_accuracy_callback.test_loss
 
 def preprocess_test_image(image_relative_path, base_image_path):
     normalized_path = os.path.normpath(image_relative_path)

@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 from keras.callbacks import Callback
 from sklearn.metrics import ConfusionMatrixDisplay
+import numpy as np
+import os
 
 
 def plot_training_history(history):
@@ -22,6 +24,10 @@ def plot_training_history(history):
     plt.ylim([0, 0.2])
     plt.legend(loc='upper right')
 
+    os.makedirs("plots", exist_ok=True)
+
+    plt.savefig("plots/training_history.png")
+
     plt.show()
 
 def plot_accuracy(history, test_accuracy):
@@ -33,6 +39,11 @@ def plot_accuracy(history, test_accuracy):
     plt.ylabel('Accuracy')
     plt.xlabel('Epoch')
     plt.legend(['Validation', 'Test'], loc='upper left')
+
+    os.makedirs("plots", exist_ok=True)
+
+    plt.savefig("plots/model_accuracy.png")
+
     plt.show()
 
 def plot_loss(history, test_loss):
@@ -44,14 +55,38 @@ def plot_loss(history, test_loss):
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(['Validation', 'Test'], loc='upper left')
+
+    os.makedirs("plots", exist_ok=True)
+    
+    # Save the plot
+    plt.savefig("plots/model_loss.png")
+
     plt.show()
 
-def plot_confusion_matrix(confusion_matrix):
-    plt.figure(figsize=(10, 7))
-    ax = plt.gca()  
-    disp = ConfusionMatrixDisplay(confusion_matrix=confusion_matrix)
-    disp.plot(cmap=plt.cm.Blues, ax=ax) 
-    plt.title('Confusion Matrix')
+def plot_confusion_matrix(confusion_matrix, classes):
+    conf_matrix_normalized = confusion_matrix.astype('float') / confusion_matrix.sum(axis=1)[:, np.newaxis]
+    plt.figure(figsize=(10, 10)) 
+    ax = plt.gca()
+    
+    disp = ConfusionMatrixDisplay(conf_matrix_normalized, display_labels=range(classes))
+    disp.plot(cmap=plt.cm.Blues, values_format='.2f', ax=ax)
+    
+    # Adjust font sizes
+    plt.xticks(fontsize=8, rotation=45)  
+    plt.yticks(fontsize=8)  
+    for text in disp.text_.ravel():
+        text.set_fontsize(6)  # Decrease font size for annotations
+    
+    plt.tight_layout()  # Adjust layout to prevent overlap
+    plt.gca().images[-1].colorbar.ax.tick_params(labelsize=10)  
+    plt.title('Confusion Matrix', fontsize=14) 
+    plt.xlabel('Predicted label', fontsize=12)  
+    plt.ylabel('True label', fontsize=12)  
+
+    os.makedirs("plots", exist_ok=True)
+
+    plt.savefig("plots/confusion_matrix.png")
+
     plt.show()
 
 def plot_roc_curve(fpr, tpr, roc_auc):
@@ -64,4 +99,10 @@ def plot_roc_curve(fpr, tpr, roc_auc):
     plt.ylabel('True Positive Rate')
     plt.title('Receiver Operating Characteristic')
     plt.legend(loc='lower right')
+
+    os.makedirs("plots", exist_ok=True)
+    
+    # Save the plot
+    plt.savefig("plots/roc_curve.png")
+
     plt.show()    
